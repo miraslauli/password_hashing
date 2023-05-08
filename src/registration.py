@@ -16,31 +16,42 @@ class Registration:
         valid_password = self._add_password(
             unhashed_password=unhashed_password,
             num_of_iter=self.database[username][2],
-            salt=self.database[username][0])
+            salt=self.database[username][0],
+        )
         self.database[username][1] = valid_password
         print("A new user was created!")
 
     def _add_username(self, username: str) -> str:
         if username in self.database:
-            raise InvalidUsernameException("The username already exists. Try another one or log in.")
+            raise InvalidUsernameException(
+                "The username already exists. Try another one or log in."
+            )
         elif len(username) < 6:
-            raise InvalidUsernameException("Your username must be at least 6 characters long.")
+            raise InvalidUsernameException(
+                "Your username must be at least 6 characters long."
+            )
         else:
             return username
 
-    def _add_password(self, *, unhashed_password: str, num_of_iter: int, salt: str) -> str:
+    def _add_password(
+        self, *, unhashed_password: str, num_of_iter: int, salt: str
+    ) -> str:
         if len(unhashed_password) < 8:
-            raise InvalidPasswordException("Your password must be at least 8 characters long.")
+            raise InvalidPasswordException(
+                "Your password must be at least 8 characters long."
+            )
         else:
-            return self._to_hash(salt=salt,
-                                 password_to_hash=unhashed_password,
-                                 num_of_iter=num_of_iter)
+            return self._to_hash(
+                salt=salt, password_to_hash=unhashed_password, num_of_iter=num_of_iter
+            )
 
     def check_login(self, username: str, password: str) -> bool:
         if username in self.database:
-            return self.database[username][1] == self._to_hash(salt=self.database[username][0],
-                                                               password_to_hash=password,
-                                                               num_of_iter=self.database[username][2])
+            return self.database[username][1] == self._to_hash(
+                salt=self.database[username][0],
+                password_to_hash=password,
+                num_of_iter=self.database[username][2],
+            )
         else:
             raise InvalidUsernameException("Incorrect username")
 
@@ -55,7 +66,7 @@ class Registration:
 
     @staticmethod
     def _to_hash(*, salt: str, password_to_hash: str, num_of_iter: int) -> str:
-        hashed_password = (salt + password_to_hash).encode('utf-8')
+        hashed_password = (salt + password_to_hash).encode("utf-8")
         for i in range(num_of_iter):
             hashy = hashlib.sha512()
             hashy.update(hashed_password)
